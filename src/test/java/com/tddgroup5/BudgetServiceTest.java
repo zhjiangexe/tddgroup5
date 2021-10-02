@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +24,7 @@ public class BudgetServiceTest {
   @Test
   void query_whole_month() {
     when(budgetRepo.getAll()).thenReturn(new ArrayList<Budget>() {{
-      add(new Budget(YearMonth.of(2020, 1), 310));
+      add(new Budget("202001", 310));
     }});
 
     LocalDate start = LocalDate.of(2020, 1, 1);
@@ -39,14 +38,50 @@ public class BudgetServiceTest {
   @Test
   void query_cross_month() {
     when(budgetRepo.getAll()).thenReturn(new ArrayList<Budget>() {{
-      add(new Budget(YearMonth.of(2020, 3), 310));
-      add(new Budget(YearMonth.of(2020, 4), 300));
+      add(new Budget("202003", 310));
+      add(new Budget("202004", 3000));
     }});
     LocalDate start = LocalDate.of(2020, 3, 31);
-    LocalDate end = LocalDate.of(2020, 4, 1);
+    LocalDate end = LocalDate.of(2020, 4, 2);
+
+    double result = budgetService.query(start, end);
+
+    assertThat(result).isEqualTo(210);
+  }
+
+  @Test
+  void query_in_month() {
+    when(budgetRepo.getAll()).thenReturn(new ArrayList<Budget>() {{
+      add(new Budget("202003", 310));
+    }});
+    LocalDate start = LocalDate.of(2020, 3, 2);
+    LocalDate end = LocalDate.of(2020, 3, 3);
 
     double result = budgetService.query(start, end);
 
     assertThat(result).isEqualTo(20);
+  }
+
+  @Test
+  void endDate_is_before_startDate() {
+    LocalDate end = LocalDate.of(2020, 3, 2);
+    LocalDate start = LocalDate.of(2020, 3, 3);
+
+    double result = budgetService.query(start, end);
+
+    assertThat(result).isEqualTo(0);
+  }
+
+  @Test
+  void out_of_subset() {
+    when(budgetRepo.getAll()).thenReturn(new ArrayList<Budget>() {{
+      add(new Budget("202004", 300));
+    }});
+    LocalDate start = LocalDate.of(2020, 2, 1);
+    LocalDate end = LocalDate.of(2020, 3, 2);
+
+    double result = budgetService.query(start, end);
+
+    assertThat(result).isEqualTo(0);
   }
 }
