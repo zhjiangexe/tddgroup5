@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'com.jiang'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.8.1'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.12.4'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.21.0'
+}
+
+test {
+    useJUnitPlatform()
+}
