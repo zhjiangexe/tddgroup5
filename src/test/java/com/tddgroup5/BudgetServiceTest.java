@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BudgetServiceTest {
+class BudgetServiceTest {
 
   private BudgetService budgetService;
   private BudgetRepo budgetRepo;
@@ -40,26 +40,14 @@ public class BudgetServiceTest {
     when(budgetRepo.getAll()).thenReturn(new ArrayList<Budget>() {{
       add(new Budget("202003", 310));
       add(new Budget("202004", 3000));
+      add(new Budget("202005", 31000));
     }});
     LocalDate start = LocalDate.of(2020, 3, 31);
-    LocalDate end = LocalDate.of(2020, 4, 2);
+    LocalDate end = LocalDate.of(2020, 5, 1);
 
     double result = budgetService.query(start, end);
 
-    assertThat(result).isEqualTo(210);
-  }
-
-  @Test
-  void query_in_month() {
-    when(budgetRepo.getAll()).thenReturn(new ArrayList<Budget>() {{
-      add(new Budget("202003", 310));
-    }});
-    LocalDate start = LocalDate.of(2020, 3, 2);
-    LocalDate end = LocalDate.of(2020, 3, 3);
-
-    double result = budgetService.query(start, end);
-
-    assertThat(result).isEqualTo(20);
+    assertThat(result).isEqualTo(4010);
   }
 
   @Test
